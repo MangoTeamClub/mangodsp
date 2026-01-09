@@ -3,732 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mango短视频</title>
+    <title>Mango短视频 - 每日精彩短视频推荐</title>
+    <meta name="description" content="Mango短视频提供每日精选短视频内容，包括搞笑、音乐、游戏等各类热门视频，还有历史上的今天特色栏目。">
+    <meta name="keywords" content="短视频,搞笑视频,音乐视频,游戏视频,历史今天,视频分享,Mango短视频">
+    <meta name="author" content="Mango短视频">
+    <meta property="og:title" content="Mango短视频 - 每日精彩短视频推荐">
+    <meta property="og:description" content="每日精选短视频内容，发现生活中的精彩瞬间。">
+    <meta property="og:type" content="website">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
         
-        html, body {
-            height: 100%;
-            overflow: hidden;
-        }
+        html, body { height: 100%; overflow: hidden; background-color: #111; color: #fff; }
         
-        body {
-            background-color: #111;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background-color: rgba(0, 0, 0, 0.95); border-bottom: 2px solid #ff6600; position: sticky; top: 0; z-index: 1000; min-height: 60px; }
+        .logo { display: flex; align-items: center; font-size: 20px; font-weight: bold; color: #ff6600; }
+        .logo i { margin-right: 8px; font-size: 22px; }
         
-        /* 顶部导航栏 */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background-color: rgba(0, 0, 0, 0.95);
-            border-bottom: 2px solid #ff6600;
-            position: sticky;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            min-height: 60px;
-            flex-shrink: 0;
-        }
+        .search-container { flex: 1; max-width: 600px; margin: 0 12px; position: relative; }
+        .search-input { width: 100%; padding: 10px 16px 10px 40px; border-radius: 25px; border: 2px solid #ff6600; background-color: #222; color: white; font-size: 14px; outline: none; }
+        .search-input:focus { box-shadow: 0 0 10px rgba(255, 102, 0, 0.7); }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #ff6600; font-size: 16px; }
         
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: #ff6600;
-            white-space: nowrap;
-        }
+        .search-history-dropdown { position: absolute; top: 100%; left: 0; right: 0; background-color: #222; border-radius: 0 0 15px 15px; border: 2px solid #ff6600; border-top: none; margin-top: -5px; z-index: 1001; max-height: 300px; overflow-y: auto; display: none; }
+        .search-history-item { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #333; }
+        .search-history-item:hover { background-color: #333; }
+        .clear-search-history { padding: 8px 16px; text-align: center; color: #ff6666; cursor: pointer; font-size: 13px; border-top: 1px solid #333; }
         
-        .logo i {
-            margin-right: 8px;
-            font-size: 22px;
-        }
+        .header-buttons { display: flex; gap: 12px; }
+        .header-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
         
-        .search-container {
-            flex: 1;
-            max-width: 600px;
-            margin: 0 12px;
-            position: relative;
-        }
+        .main-content { flex: 1; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 0 10px 20px; }
+        .video-container { width: 100%; max-width: 800px; margin: 10px 0; }
+        .video-player { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; position: relative; aspect-ratio: 16/9; }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        .video-info { padding: 16px; background-color: rgba(0, 0, 0, 0.85); border-radius: 0 0 10px 10px; margin-top: -5px; }
+        .video-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .video-meta { display: flex; flex-wrap: wrap; justify-content: space-between; margin-bottom: 20px; color: #aaa; font-size: 13px; gap: 8px; }
+        .video-author { color: #ff6600; font-weight: 500; }
         
-        .search-input {
-            width: 100%;
-            padding: 10px 16px;
-            padding-left: 40px;
-            border-radius: 25px;
-            border: 2px solid #ff6600;
-            background-color: #222;
-            color: white;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s;
-        }
+        .video-nav { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: flex; justify-content: space-between; padding: 0 12px; pointer-events: none; }
+        .nav-btn { background-color: rgba(255, 102, 0, 0.8); color: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; pointer-events: all; }
         
-        .search-input:focus {
-            box-shadow: 0 0 10px rgba(255, 102, 0, 0.7);
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.9); z-index: 2000; align-items: center; justify-content: center; padding: 16px; }
+        .modal-content { background-color: #222; border-radius: 12px; width: 100%; max-width: 500px; max-height: 80vh; overflow: hidden; border: 2px solid #ff6600; display: flex; flex-direction: column; }
+        .modal-header { padding: 18px; background-color: #ff6600; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 20px; font-weight: bold; }
+        .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
         
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #ff6600;
-            font-size: 16px;
-        }
+        .share-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .share-option { display: flex; flex-direction: column; align-items: center; padding: 15px 10px; background-color: rgba(0, 0, 0, 0.3); border-radius: 10px; cursor: pointer; border: 1px solid transparent; }
+        .share-option:hover { background-color: rgba(255, 102, 0, 0.1); border-color: rgba(255, 102, 0, 0.3); }
+        .share-option-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; }
         
-        .header-buttons {
-            display: flex;
-            gap: 12px;
-            flex-shrink: 0;
-        }
+        .floating-buttons { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 100; }
+        .floating-btn { width: 56px; height: 56px; border-radius: 50%; border: none; background: linear-gradient(135deg, #ff6600, #ff8533); color: white; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4); }
         
-        .header-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            transition: color 0.3s;
-            padding: 6px;
-            position: relative;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .favorites-list { list-style-type: none; }
+        .favorites-list li { padding: 14px; border-bottom: 1px solid #444; cursor: pointer; }
+        .favorite-item { display: flex; justify-content: space-between; align-items: center; }
+        .favorite-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 10px; font-size: 15px; }
+        .remove-favorite { background: none; border: none; color: #ff6666; cursor: pointer; font-size: 16px; padding: 5px; }
         
-        .header-btn:hover {
-            color: #ff6600;
-        }
+        .favorites-search-container { padding: 15px 20px 0; position: relative; }
+        .favorites-search-input { width: 100%; padding: 10px 16px 10px 40px; border-radius: 25px; border: 2px solid #ff6600; background-color: #333; color: white; font-size: 14px; outline: none; }
         
-        /* 主要内容区域 */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-y: auto;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-            padding: 0 10px 20px;
-            position: relative;
-        }
+        .loader { display: none; text-align: center; padding: 30px; color: #ff6600; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; }
+        .video-placeholder { width: 100%; height: 100%; background-color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ff6600; text-align: center; padding: 20px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #aaa; }
         
-        /* 视频容器 */
-        .video-container {
-            width: 100%;
-            max-width: 800px;
-            position: relative;
-            margin: 10px 0;
-            flex-shrink: 0;
-        }
+        .keyboard-hint { position: fixed; bottom: 20px; right: 20px; background-color: rgba(0, 0, 0, 0.7); padding: 10px 15px; border-radius: 8px; font-size: 13px; color: #aaa; border-left: 3px solid #ff6600; z-index: 100; }
+        .key { display: inline-block; background-color: #333; padding: 2px 8px; border-radius: 4px; margin: 0 3px; font-family: monospace; }
         
-        .video-player {
-            width: 100%;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            background-color: #000;
-            position: relative;
-            aspect-ratio: 16/9;
-        }
+        .history-today-container { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 20px; text-align: center; }
+        .history-today-icon { font-size: 60px; color: #ff6600; margin-bottom: 20px; }
+        .history-today-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; color: #ff6600; }
+        .history-today-date { font-size: 16px; color: #aaa; margin-bottom: 30px; }
+        .history-event-list { width: 100%; max-height: 300px; overflow-y: auto; text-align: left; padding: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; margin-bottom: 20px; }
+        .history-event-item { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; }
+        .history-event-item:hover { background-color: rgba(255, 102, 0, 0.1); }
+        .history-event-year { display: inline-block; background: #ff6600; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-right: 10px; }
+        .history-event-text { font-size: 14px; line-height: 1.5; }
         
-        video {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: contain;
-        }
+        .badge { position: absolute; top: -5px; right: -5px; background-color: #ff3333; color: white; font-size: 12px; font-weight: bold; min-width: 20px; height: 20px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
         
-        .video-info {
-            padding: 16px;
-            background-color: rgba(0, 0, 0, 0.85);
-            border-radius: 0 0 10px 10px;
-            margin-top: -5px;
-        }
-        
-        .video-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .video-meta {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            color: #aaa;
-            font-size: 13px;
-            gap: 8px;
-        }
-        
-        .video-author {
-            color: #ff6600;
-            font-weight: 500;
-        }
-        
-        .video-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .action-btn {
-            background-color: #ff6600;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 25px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.3s;
-            flex: 1;
-            min-height: 44px;
-        }
-        
-        .action-btn:hover, .action-btn:active {
-            background-color: #ff8533;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 102, 0, 0.4);
-        }
-        
-        .action-btn i {
-            font-size: 16px;
-        }
-        
-        .video-nav {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            justify-content: space-between;
-            padding: 0 12px;
-            pointer-events: none;
-            z-index: 100;
-        }
-        
-        .nav-btn {
-            background-color: rgba(255, 102, 0, 0.8);
-            color: white;
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            pointer-events: all;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
-        }
-        
-        .nav-btn:hover, .nav-btn:active {
-            background-color: rgba(255, 102, 0, 1);
-            transform: scale(1.1);
-        }
-        
-        /* 模态框样式 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-        
-        .modal-content {
-            background-color: #222;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow: hidden;
-            border: 2px solid #ff6600;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .modal-header {
-            padding: 18px;
-            background-color: #ff6600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            line-height: 1;
-            padding: 5px;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-        
-        .modal-footer {
-            padding: 12px 20px;
-            background-color: rgba(0, 0, 0, 0.3);
-            text-align: center;
-            color: #aaa;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-        
-        .favorites-list {
-            list-style-type: none;
-        }
-        
-        .favorites-list li {
-            padding: 14px;
-            border-bottom: 1px solid #444;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .favorites-list li:active {
-            background-color: #333;
-        }
-        
-        .favorites-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .favorite-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .favorite-title {
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            margin-right: 10px;
-            font-size: 15px;
-        }
-        
-        .remove-favorite {
-            background: none;
-            border: none;
-            color: #ff6666;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 5px;
-            flex-shrink: 0;
-        }
-        
-        /* 加载指示器 */
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 30px;
-            color: #ff6600;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
-        }
-        
-        .loader i {
-            font-size: 40px;
-            margin-bottom: 15px;
-        }
-        
-        /* 视频占位符 */
-        .video-placeholder {
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #ff6600;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .video-placeholder i {
-            font-size: 50px;
-            margin-bottom: 15px;
-        }
-        
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #aaa;
-        }
-        
-        .empty-state i {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: #ff6600;
-        }
-        
-        /* 键盘提示 */
-        .keyboard-hint {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #aaa;
-            border-left: 3px solid #ff6600;
-            z-index: 100;
-        }
-        
-        .key {
-            display: inline-block;
-            background-color: #333;
-            padding: 2px 8px;
-            border-radius: 4px;
-            margin: 0 3px;
-            font-family: monospace;
-        }
-        
-        /* 移动端优化 */
         @media (max-width: 768px) {
-            .header {
-                padding: 10px 12px;
-                min-height: 56px;
-            }
-            
-            .logo {
-                font-size: 18px;
-            }
-            
-            .logo i {
-                font-size: 20px;
-                margin-right: 6px;
-            }
-            
-            .search-container {
-                margin: 0 8px;
-            }
-            
-            .search-input {
-                padding: 8px 14px;
-                padding-left: 36px;
-                font-size: 13px;
-            }
-            
-            .search-icon {
-                left: 10px;
-                font-size: 14px;
-            }
-            
-            .header-btn {
-                font-size: 18px;
-                width: 36px;
-                height: 36px;
-                padding: 4px;
-            }
-            
-            .header-buttons {
-                gap: 8px;
-            }
-            
-            .video-container {
-                margin: 5px 0;
-            }
-            
-            .video-info {
-                padding: 14px;
-            }
-            
-            .video-title {
-                font-size: 16px;
-                -webkit-line-clamp: 3;
-            }
-            
-            .video-meta {
-                font-size: 12px;
-            }
-            
-            .action-btn {
-                padding: 8px 14px;
-                font-size: 14px;
-                min-height: 40px;
-            }
-            
-            .nav-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-            
-            .modal-body {
-                padding: 16px;
-            }
-            
-            .modal-header {
-                padding: 16px;
-            }
-            
-            .modal-title {
-                font-size: 18px;
-            }
-            
-            .favorite-title {
-                font-size: 14px;
-            }
-            
-            .keyboard-hint {
-                display: none;
-            }
+            .header { padding: 10px 12px; }
+            .logo { font-size: 18px; }
+            .search-container { margin: 0 8px; }
+            .search-input { padding: 8px 14px 8px 36px; font-size: 13px; }
+            .header-btn { width: 36px; height: 36px; }
+            .video-title { font-size: 16px; -webkit-line-clamp: 3; }
+            .video-meta { font-size: 12px; margin-bottom: 15px; }
+            .keyboard-hint { display: none; }
+            .share-options { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .floating-buttons { bottom: 15px; gap: 10px; }
+            .floating-btn { width: 50px; height: 50px; font-size: 18px; }
         }
         
         @media (max-width: 480px) {
-            .header {
-                padding: 8px 10px;
-            }
-            
-            .logo {
-                font-size: 16px;
-            }
-            
-            .logo i {
-                font-size: 18px;
-            }
-            
-            .search-input {
-                padding: 8px 12px;
-                padding-left: 34px;
-                font-size: 12px;
-            }
-            
-            .video-player {
-                border-radius: 8px;
-            }
-            
-            .video-title {
-                font-size: 15px;
-            }
-            
-            .video-meta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-            
-            .action-btn {
-                padding: 8px 12px;
-                font-size: 13px;
-                min-height: 38px;
-            }
-            
-            .action-btn i {
-                font-size: 14px;
-            }
-            
-            .nav-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 16px;
-            }
-            
-            .modal {
-                padding: 10px;
-            }
-            
-            .modal-content {
-                max-height: 85vh;
-            }
-            
-            .favorites-list li {
-                padding: 12px;
-            }
+            .header { padding: 8px 10px; }
+            .logo { font-size: 16px; }
+            .search-input { padding: 8px 12px 8px 34px; font-size: 12px; }
+            .video-title { font-size: 15px; }
+            .video-meta { flex-direction: column; gap: 4px; margin-bottom: 12px; }
+            .share-options { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .share-option-icon { width: 40px; height: 40px; font-size: 20px; }
+            .floating-buttons { bottom: 10px; gap: 8px; }
+            .floating-btn { width: 46px; height: 46px; font-size: 17px; }
         }
         
-        /* 超小屏幕手机优化 */
         @media (max-width: 360px) {
-            .logo span {
-                display: none;
-            }
-            
-            .logo i {
-                margin-right: 0;
-                font-size: 22px;
-            }
-            
-            .search-input {
-                padding-left: 32px;
-            }
-            
-            .video-title {
-                font-size: 14px;
-            }
-            
-            .action-btn {
-                padding: 6px 10px;
-                font-size: 12px;
-                min-height: 36px;
-            }
+            .logo span { display: none; }
+            .logo i { margin-right: 0; }
+            .search-input { padding-left: 32px; }
+            .video-title { font-size: 14px; }
+            .floating-buttons { bottom: 8px; gap: 6px; }
+            .floating-btn { width: 44px; height: 44px; font-size: 16px; }
         }
         
-        /* 横屏优化 */
-        @media (orientation: landscape) and (max-height: 500px) {
-            .header {
-                min-height: 50px;
-                padding: 8px 12px;
-            }
-            
-            .logo {
-                font-size: 16px;
-            }
-            
-            .search-input {
-                padding: 6px 12px;
-                padding-left: 32px;
-                font-size: 12px;
-            }
-            
-            .video-player {
-                aspect-ratio: 16/9;
-            }
-            
-            .video-info {
-                padding: 12px;
-            }
-            
-            .video-title {
-                font-size: 14px;
-                margin-bottom: 4px;
-                -webkit-line-clamp: 2;
-            }
-            
-            .video-meta {
-                margin-bottom: 8px;
-                font-size: 11px;
-            }
-            
-            .action-btn {
-                padding: 6px 10px;
-                font-size: 12px;
-                min-height: 32px;
-            }
-            
-            .nav-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 14px;
-            }
-        }
-        
-        /* 平板设备优化 */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .video-container {
-                max-width: 90%;
-            }
-            
-            .video-player {
-                max-height: 70vh;
-            }
-        }
-        
-        /* 防止iOS Safari工具栏影响布局 */
-        @supports (-webkit-touch-callout: none) {
-            body {
-                height: -webkit-fill-available;
-            }
-            
-            .main-content {
-                height: -webkit-fill-available;
-            }
-        }
-        
-        /* 滚动条样式 */
-        .modal-body::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .modal-body::-webkit-scrollbar-track {
-            background: #333;
-            border-radius: 3px;
-        }
-        
-        .modal-body::-webkit-scrollbar-thumb {
-            background: #ff6600;
-            border-radius: 3px;
-        }
-        
-        .main-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .main-content::-webkit-scrollbar-track {
-            background: #222;
-        }
-        
-        .main-content::-webkit-scrollbar-thumb {
-            background: #ff6600;
-            border-radius: 3px;
-        }
+        body { display: flex; flex-direction: column; }
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-track { background: #333; }
+        .modal-body::-webkit-scrollbar-thumb { background: #ff6600; }
     </style>
 </head>
 <body>
-    <!-- 顶部导航栏 -->
     <header class="header">
         <div class="logo">
             <i class="fas fa-play-circle"></i>
@@ -738,6 +139,7 @@
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
             <input type="text" class="search-input" id="searchInput" placeholder="搜索视频..." autocomplete="off">
+            <div class="search-history-dropdown" id="searchHistoryDropdown"></div>
         </div>
         
         <div class="header-buttons">
@@ -750,10 +152,8 @@
         </div>
     </header>
 
-    <!-- 主要内容区域 -->
     <main class="main-content" id="mainContent">
         <div class="video-container">
-            <!-- 视频播放区域 -->
             <div class="video-player" id="videoPlayer">
                 <div class="video-placeholder" id="videoPlaceholder">
                     <i class="fas fa-play-circle"></i>
@@ -765,7 +165,19 @@
                     您的浏览器不支持视频播放
                 </video>
                 
-                <!-- 视频导航按钮 -->
+                <div class="history-today-container" id="historyTodayContainer" style="display:none;">
+                    <div class="history-today-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="history-today-title" id="historyTodayTitle">历史上的今天</div>
+                    <div class="history-today-date" id="historyTodayDate">12月11日</div>
+                    <div class="history-event-list" id="historyEventList"></div>
+                    <div class="history-today-footer">
+                        <p>Mango短视频官方 · 每日更新</p>
+                        <p style="margin-top:5px;font-size:11px;color:#666;">点击历史事件可搜索相关视频</p>
+                    </div>
+                </div>
+                
                 <div class="video-nav">
                     <button class="nav-btn" id="prevBtn" title="上一个视频">
                         <i class="fas fa-chevron-up"></i>
@@ -776,44 +188,35 @@
                 </div>
             </div>
             
-            <!-- 视频信息区域 -->
             <div class="video-info" id="videoInfo" style="display:none;">
                 <div class="video-title" id="videoTitle">视频标题</div>
                 <div class="video-meta">
-                    <div>
-                        作者: <span class="video-author" id="videoAuthor">作者名称</span>
-                    </div>
-                    <div>
-                        播放量: <span id="videoPlayCount">0</span>
-                    </div>
-                    <div>
-                        发布时间: <span id="videoPublishTime">刚刚</span>
-                    </div>
-                </div>
-                <div class="video-actions">
-                    <button class="action-btn" id="favoriteBtn">
-                        <i class="fas fa-heart"></i> 收藏
-                    </button>
-                    <button class="action-btn" id="shareBtn">
-                        <i class="fas fa-share"></i> 分享
-                    </button>
+                    <div>作者: <span class="video-author" id="videoAuthor">作者名称</span></div>
+                    <div>播放量: <span id="videoPlayCount">0</span></div>
+                    <div>发布时间: <span id="videoPublishTime">刚刚</span></div>
                 </div>
             </div>
         </div>
         
-        <!-- 加载指示器 -->
         <div class="loader" id="loader">
             <i class="fas fa-spinner fa-spin"></i>
             <p>加载中...</p>
         </div>
         
-        <!-- 键盘提示 (桌面端显示) -->
         <div class="keyboard-hint" id="keyboardHint">
             使用 <span class="key">↑</span> <span class="key">↓</span> 键或滚轮切换视频
         </div>
     </main>
 
-    <!-- 关于模态框 -->
+    <div class="floating-buttons" id="floatingButtons">
+        <button class="floating-btn" id="floatingFavoriteBtn" title="收藏">
+            <i class="fas fa-heart"></i>
+        </button>
+        <button class="floating-btn share" id="floatingShareBtn" title="分享">
+            <i class="fas fa-share"></i>
+        </button>
+    </div>
+
     <div class="modal" id="aboutModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -825,7 +228,6 @@
                 <p><strong>声明：</strong>本应用提供的所有视频内容均来源于网络，仅用于学习和娱乐目的。</p>
                 <p>请尊重视频原作者的知识产权，如需商业使用请联系版权所有者。</p>
                 <p>本应用不存储任何视频内容，所有视频均通过API接口实时获取。</p>
-                <p>如果您是视频内容的版权所有者，认为本应用侵犯了您的权益，请联系我们。</p>
             </div>
             <div class="modal-footer">
                 ©2022-2026 Mango短视频 版权所有
@@ -833,7 +235,6 @@
         </div>
     </div>
 
-    <!-- 收藏夹模态框 -->
     <div class="modal" id="favoritesModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -841,13 +242,21 @@
                 <button class="close-btn" id="closeFavoritesBtn">&times;</button>
             </div>
             <div class="modal-body">
-                <ul class="favorites-list" id="favoritesList">
-                    <!-- 收藏项将通过JS动态添加 -->
-                </ul>
+                <div class="favorites-search-container">
+                    <i class="fas fa-search favorites-search-icon"></i>
+                    <input type="text" class="favorites-search-input" id="favoritesSearchInput" placeholder="搜索收藏的视频...">
+                </div>
+                
+                <ul class="favorites-list" id="favoritesList"></ul>
                 <div class="empty-state" id="emptyFavorites" style="display:none;">
                     <i class="fas fa-heart-broken"></i>
                     <p>收藏夹为空</p>
                     <p>收藏的视频将显示在这里</p>
+                </div>
+                <div class="empty-state" id="noSearchResults" style="display:none;">
+                    <i class="fas fa-search"></i>
+                    <p>未找到匹配的收藏</p>
+                    <p>尝试其他搜索关键词</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -856,21 +265,41 @@
         </div>
     </div>
 
+    <div class="modal" id="shareModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">分享视频</div>
+                <button class="close-btn" id="closeShareBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="share-content" id="shareContent"></div>
+            </div>
+            <div class="modal-footer">
+                选择一种方式分享
+            </div>
+        </div>
+    </div>
+
     <script>
-        // 全局变量
         let currentVideoList = [];
         let currentVideoIndex = 0;
         let currentSearchKeyword = '';
         let favorites = JSON.parse(localStorage.getItem('mangoFavorites')) || [];
         let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
-        // 新增变量：用于推荐视频功能
-        let isRecommendationMode = true; // 标记当前是否处于推荐模式
-        let recommendationCount = 0; // 当前推荐词下已播放的视频计数
-        let currentRecommendationIndex = 0; // 当前推荐词的索引
-        const recommendations = ['搞笑', '猫meme', '抽象', '音乐', '游戏','我的世界','Mango团队','Mango画社','电影','编程','疯狂动物城'];
+        let isRecommendationMode = true;
+        let recommendationCount = 0;
+        let currentRecommendationIndex = 0;
+        const recommendations = ['搞笑', '猫meme', '抽象', '音乐', '游戏','我的世界','电影','编程'];
         
-        // DOM元素
+        let todayHistoryLoaded = false;
+        let todayHistoryData = null;
+        let historyTodayPosition = Math.random() < 0.5 ? 1 : 2;
+        let historyTodayInserted = false;
+        
+        let searchHistory = JSON.parse(localStorage.getItem('mangoSearchHistory')) || [];
+        const MAX_SEARCH_HISTORY = 10;
+        
         const searchInput = document.getElementById('searchInput');
         const videoElement = document.getElementById('videoElement');
         const videoSource = document.getElementById('videoSource');
@@ -886,29 +315,52 @@
         const favoritesBtn = document.getElementById('favoritesBtn');
         const aboutModal = document.getElementById('aboutModal');
         const favoritesModal = document.getElementById('favoritesModal');
+        const shareModal = document.getElementById('shareModal');
         const closeAboutBtn = document.getElementById('closeAboutBtn');
         const closeFavoritesBtn = document.getElementById('closeFavoritesBtn');
-        const favoriteBtn = document.getElementById('favoriteBtn');
-        const favoritesList = document.getElementById('favoritesList');
-        const emptyFavorites = document.getElementById('emptyFavorites');
+        const closeShareBtn = document.getElementById('closeShareBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const keyboardHint = document.getElementById('keyboardHint');
         
-        // 初始化
+        const historyTodayContainer = document.getElementById('historyTodayContainer');
+        const historyTodayTitle = document.getElementById('historyTodayTitle');
+        const historyTodayDate = document.getElementById('historyTodayDate');
+        const historyEventList = document.getElementById('historyEventList');
+        
+        const searchHistoryDropdown = document.getElementById('searchHistoryDropdown');
+        const favoritesSearchInput = document.getElementById('favoritesSearchInput');
+        const noSearchResults = document.getElementById('noSearchResults');
+        
+        const floatingButtons = document.getElementById('floatingButtons');
+        const floatingFavoriteBtn = document.getElementById('floatingFavoriteBtn');
+        const floatingShareBtn = document.getElementById('floatingShareBtn');
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // 如果是移动设备，隐藏键盘提示
             if (isMobile) {
                 keyboardHint.style.display = 'none';
             }
             
-            // 绑定事件监听器
+            updateSearchHistoryDisplay();
+            
             searchInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    // 用户主动搜索时，退出推荐模式
                     isRecommendationMode = false;
                     recommendationCount = 0;
+                    historyTodayInserted = false;
                     searchVideos();
+                }
+            });
+            
+            searchInput.addEventListener('focus', function() {
+                if (searchHistory.length > 0) {
+                    searchHistoryDropdown.style.display = 'block';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container')) {
+                    searchHistoryDropdown.style.display = 'none';
                 }
             });
             
@@ -920,40 +372,43 @@
             
             closeAboutBtn.addEventListener('click', () => hideModal(aboutModal));
             closeFavoritesBtn.addEventListener('click', () => hideModal(favoritesModal));
+            closeShareBtn.addEventListener('click', () => hideModal(shareModal));
             
-            // 点击模态框外部关闭
             window.addEventListener('click', function(e) {
                 if (e.target === aboutModal) hideModal(aboutModal);
                 if (e.target === favoritesModal) hideModal(favoritesModal);
+                if (e.target === shareModal) hideModal(shareModal);
             });
             
-            favoriteBtn.addEventListener('click', toggleFavorite);
-            
+            floatingFavoriteBtn.addEventListener('click', toggleFavorite);
             prevBtn.addEventListener('click', prevVideo);
             nextBtn.addEventListener('click', nextVideo);
+            floatingShareBtn.addEventListener('click', openShareModal);
             
-            // 键盘快捷键 (桌面端)
             if (!isMobile) {
                 document.addEventListener('keydown', function(e) {
-                    // 上下箭头切换视频
                     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
                         e.preventDefault();
                         if (e.key === 'ArrowUp') prevVideo();
                         if (e.key === 'ArrowDown') nextVideo();
                     }
                     
-                    // ESC键关闭模态框
                     if (e.key === 'Escape') {
                         hideModal(aboutModal);
                         hideModal(favoritesModal);
+                        hideModal(shareModal);
+                    }
+                    
+                    if (e.key === 'f' || e.key === 'F') {
+                        toggleFavorite();
+                    }
+                    
+                    if (e.key === 's' || e.key === 'S') {
+                        openShareModal();
                     }
                 });
-            }
-            
-            // 鼠标滚轮切换视频 (桌面端)
-            if (!isMobile) {
+                
                 mainContent.addEventListener('wheel', function(e) {
-                    // 如果正在滚动视频区域，切换视频
                     if (e.deltaY !== 0 && currentVideoList.length > 0) {
                         e.preventDefault();
                         if (e.deltaY > 0) nextVideo();
@@ -962,7 +417,6 @@
                 }, { passive: false });
             }
             
-            // 移动端触摸滑动切换视频
             if (isMobile) {
                 let touchStartY = 0;
                 let touchEndY = 0;
@@ -980,50 +434,80 @@
                     const swipeThreshold = 50;
                     const swipeDistance = touchStartY - touchEndY;
                     
-                    // 垂直滑动超过阈值
                     if (Math.abs(swipeDistance) > swipeThreshold) {
                         if (swipeDistance > 0) {
-                            // 向上滑动 - 下一个视频
                             nextVideo();
                         } else {
-                            // 向下滑动 - 上一个视频
                             prevVideo();
                         }
                     }
                 }
             }
             
-            // 初始加载推荐视频
-            loadNextRecommendation();
+            favoritesSearchInput.addEventListener('input', function() {
+                filterFavorites(this.value);
+            });
             
-            // 调整视频容器高度，防止键盘弹出时遮挡
+            loadNextRecommendation();
             window.addEventListener('resize', adjustLayout);
             adjustLayout();
+            loadHistoryTodayData();
+            initFloatingButtons();
         });
         
-        // 调整布局
+        function initFloatingButtons() {
+            adjustFloatingButtons();
+            
+            let lastScrollTop = 0;
+            mainContent.addEventListener('scroll', function() {
+                const scrollTop = mainContent.scrollTop;
+                const delta = scrollTop - lastScrollTop;
+                
+                if (Math.abs(delta) > 10) {
+                    if (delta > 0) {
+                        floatingButtons.style.transform = 'translateX(-50%) translateY(100px)';
+                        floatingButtons.style.opacity = '0.3';
+                    } else {
+                        floatingButtons.style.transform = 'translateX(-50%) translateY(0)';
+                        floatingButtons.style.opacity = '1';
+                    }
+                }
+                
+                lastScrollTop = scrollTop;
+            });
+        }
+        
+        function adjustFloatingButtons() {
+            const videoContainer = document.querySelector('.video-container');
+            if (videoContainer) {
+                const rect = videoContainer.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                
+                if (rect.bottom > windowHeight / 2) {
+                    floatingButtons.style.bottom = '20px';
+                } else {
+                    floatingButtons.style.bottom = '20px';
+                }
+            }
+        }
+        
         function adjustLayout() {
-            // 设置主要内容区域高度
             const headerHeight = document.querySelector('.header').offsetHeight;
             const windowHeight = window.innerHeight;
             mainContent.style.height = (windowHeight - headerHeight) + 'px';
+            adjustFloatingButtons();
         }
         
-        // 显示模态框
         function showModal(modal) {
             modal.style.display = 'flex';
-            // 防止背景滚动
             document.body.style.overflow = 'hidden';
         }
         
-        // 隐藏模态框
         function hideModal(modal) {
             modal.style.display = 'none';
-            // 恢复背景滚动
             document.body.style.overflow = '';
         }
         
-        // 搜索视频
         async function searchVideos() {
             const keyword = searchInput.value.trim();
             if (!keyword) return;
@@ -1031,21 +515,19 @@
             currentSearchKeyword = keyword;
             showLoader();
             
-            // 移动端收起键盘
             if (isMobile) {
                 searchInput.blur();
             }
             
+            addToSearchHistory(keyword);
+            
             try {
-                // 调用第一个API获取视频列表
                 const response = await fetch(`https://api.jkyai.top/API/bilibilijx.php?msg=${encodeURIComponent(keyword)}`);
                 const data = await response.json();
                 
                 if (data.success && data.data && data.data.length > 0) {
                     currentVideoList = data.data;
                     currentVideoIndex = 0;
-                    
-                    // 获取并播放第一个视频
                     await loadVideoByIndex(0);
                 } else {
                     hideLoader();
@@ -1053,28 +535,22 @@
                 }
             } catch (error) {
                 hideLoader();
-                console.error('搜索视频出错:', error);
                 alert('搜索失败，请检查网络连接');
             }
         }
         
-        // 加载下一个推荐词
         async function loadNextRecommendation() {
-            // 如果不在推荐模式，则不加载推荐
             if (!isRecommendationMode) return;
             
-            // 获取下一个推荐词
             const keyword = recommendations[currentRecommendationIndex];
             currentRecommendationIndex = (currentRecommendationIndex + 1) % recommendations.length;
             
-            // 更新搜索框
             searchInput.value = keyword;
             currentSearchKeyword = keyword;
             
-            // 重置推荐计数
             recommendationCount = 0;
+            historyTodayInserted = false;
             
-            // 搜索推荐视频
             showLoader();
             
             try {
@@ -1084,36 +560,48 @@
                 if (data.success && data.data && data.data.length > 0) {
                     currentVideoList = data.data;
                     currentVideoIndex = 0;
-                    
-                    // 获取并播放第一个视频
+                    insertHistoryTodayIntoList();
                     await loadVideoByIndex(0);
                 } else {
                     hideLoader();
-                    // 如果当前推荐词没有结果，尝试下一个推荐词
                     setTimeout(loadNextRecommendation, 1000);
                 }
             } catch (error) {
                 hideLoader();
-                console.error('加载推荐视频出错:', error);
-                // 出错时也尝试下一个推荐词
                 setTimeout(loadNextRecommendation, 1000);
             }
         }
         
-        // 根据索引加载视频
+        function insertHistoryTodayIntoList() {
+            if (todayHistoryLoaded && !historyTodayInserted && isRecommendationMode && todayHistoryData) {
+                const historyTodayVideo = {
+                    isHistoryToday: true,
+                    title: "历史上的今天",
+                    author: "Mango短视频官方",
+                    play_count: "0",
+                    publish_time: getHoursAgoText(),
+                    history_data: todayHistoryData
+                };
+                
+                const insertPosition = Math.min(historyTodayPosition, currentVideoList.length);
+                currentVideoList.splice(insertPosition, 0, historyTodayVideo);
+                historyTodayInserted = true;
+            }
+        }
+        
         async function loadVideoByIndex(index) {
             if (index < 0 || index >= currentVideoList.length) return;
             
             currentVideoIndex = index;
             const video = currentVideoList[index];
             
-            // 显示视频信息
+            if (video.isHistoryToday) {
+                loadHistoryTodayVideo(video);
+                return;
+            }
+            
             updateVideoInfo(video);
-            
-            // 检查是否已收藏
             updateFavoriteButton(video);
-            
-            // 加载视频详情（第二个API）
             showLoader();
             
             try {
@@ -1121,29 +609,21 @@
                 const data = await response.json();
                 
                 if (data.success && data.data && data.data.video_url) {
-                    // 设置视频源并播放
                     videoSource.src = data.data.video_url;
                     videoElement.load();
                     
-                    // 隐藏占位符，显示视频
                     videoPlaceholder.style.display = 'none';
+                    historyTodayContainer.style.display = 'none';
                     videoElement.style.display = 'block';
                     videoInfo.style.display = 'block';
                     
-                    // 自动播放视频
-                    videoElement.play().catch(e => {
-                        console.log('自动播放被阻止，需要用户交互');
-                    });
+                    videoElement.play().catch(e => {});
                     
-                    // 滚动到视频区域
                     mainContent.scrollTo(0, 0);
                 } else {
                     throw new Error('无法获取视频URL');
                 }
             } catch (error) {
-                console.error('加载视频出错:', error);
-                
-                // 显示错误信息
                 videoPlaceholder.innerHTML = `
                     <div>
                         <i class="fas fa-exclamation-triangle"></i>
@@ -1153,99 +633,219 @@
                 `;
                 videoPlaceholder.style.display = 'flex';
                 videoElement.style.display = 'none';
+                historyTodayContainer.style.display = 'none';
                 videoInfo.style.display = 'block';
             } finally {
                 hideLoader();
             }
         }
         
-        // 更新视频信息显示
-        function updateVideoInfo(video) {
-            videoTitle.textContent = video.title;
-            videoAuthor.textContent = video.author;
-            videoPlayCount.textContent = video.play_count;
-            videoPublishTime.textContent = video.publish_time;
-        }
-        
-        // 更新收藏按钮状态
-        function updateFavoriteButton(video) {
-            const isFavorited = favorites.some(fav => 
-                fav.title === video.title && fav.author === video.author);
-            
-            if (isFavorited) {
-                favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> 已收藏';
-                favoriteBtn.style.backgroundColor = '#ff3333';
-            } else {
-                favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> 收藏';
-                favoriteBtn.style.backgroundColor = '#ff6600';
+        async function loadHistoryTodayData() {
+            try {
+                const now = new Date();
+                const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                const day = now.getDate().toString().padStart(2, '0');
+                const dateStr = month + day;
+                
+                const response = await fetch(`https://api.jkyai.top/API/lssdjt.php?time=${dateStr}`);
+                const data = await response.json();
+                
+                if (data.code === 200 && data.data && data.data.events && data.data.events.length > 0) {
+                    todayHistoryData = data.data.events;
+                    todayHistoryLoaded = true;
+                    historyTodayDate.textContent = `${month}月${day}日`;
+                }
+            } catch (error) {
+                console.error('加载历史今天数据出错:', error);
             }
         }
         
-        // 切换收藏状态
+        function loadHistoryTodayVideo(video) {
+            videoPlaceholder.style.display = 'none';
+            videoElement.style.display = 'none';
+            historyTodayContainer.style.display = 'flex';
+            videoInfo.style.display = 'block';
+            
+            videoTitle.textContent = "历史上的今天";
+            videoAuthor.textContent = "Mango短视频官方";
+            videoPlayCount.textContent = "0";
+            videoPublishTime.textContent = getHoursAgoText();
+            
+            updateFavoriteButton(video);
+            renderHistoryEvents(video.history_data || todayHistoryData);
+            mainContent.scrollTo(0, 0);
+            hideLoader();
+        }
+        
+        function renderHistoryEvents(events) {
+            if (!events || events.length === 0) {
+                historyEventList.innerHTML = '<div class="history-event-item">暂无历史事件数据</div>';
+                return;
+            }
+            
+            const eventsToShow = events.slice(0, 8);
+            historyEventList.innerHTML = '';
+            eventsToShow.forEach(event => {
+                const item = document.createElement('div');
+                item.className = 'history-event-item';
+                item.innerHTML = `
+                    <span class="history-event-year">${event.year}</span>
+                    <span class="history-event-text">${event.event}</span>
+                `;
+                
+                item.addEventListener('click', function() {
+                    const eventText = event.event.replace(/^\d+年\d+月\d+日\s*/, '');
+                    searchFromHistoryEvent(eventText);
+                });
+                
+                historyEventList.appendChild(item);
+            });
+        }
+        
+        function searchFromHistoryEvent(eventText) {
+            searchInput.value = eventText;
+            currentSearchKeyword = eventText;
+            
+            isRecommendationMode = false;
+            recommendationCount = 0;
+            historyTodayInserted = false;
+            
+            addToSearchHistory(eventText);
+            searchVideos();
+        }
+        
+        function getHoursAgoText() {
+            const now = new Date();
+            const hours = now.getHours();
+            return `${hours}小时前`;
+        }
+        
+        function updateVideoInfo(video) {
+            videoTitle.textContent = video.title;
+            videoAuthor.textContent = video.author;
+            videoPlayCount.textContent = video.play_count || "0";
+            videoPublishTime.textContent = video.publish_time || "刚刚";
+        }
+        
+        function updateFavoriteButton(video) {
+            const isFavorited = favorites.some(fav => {
+                if (video.isHistoryToday) {
+                    return fav.title === "历史上的今天" && fav.author === "Mango短视频官方";
+                } else {
+                    return fav.title === video.title && fav.author === video.author;
+                }
+            });
+            
+            if (isFavorited) {
+                floatingFavoriteBtn.style.background = 'linear-gradient(135deg, #ff3333, #ff6666)';
+            } else {
+                floatingFavoriteBtn.style.background = 'linear-gradient(135deg, #ff6600, #ff8533)';
+            }
+        }
+        
         function toggleFavorite() {
             const currentVideo = currentVideoList[currentVideoIndex];
             if (!currentVideo) return;
             
-            const index = favorites.findIndex(fav => 
-                fav.title === currentVideo.title && fav.author === currentVideo.author);
+            const isHistoryToday = currentVideo.isHistoryToday;
             
-            if (index === -1) {
-                // 添加到收藏
-                favorites.push({
-                    ...currentVideo,
-                    keyword: currentSearchKeyword,
-                    index: currentVideoIndex
-                });
-                favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> 已收藏';
-                favoriteBtn.style.backgroundColor = '#ff3333';
-                
-                // 添加收藏动画效果
-                favoriteBtn.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    favoriteBtn.style.transform = 'scale(1)';
-                }, 200);
+            let index;
+            if (isHistoryToday) {
+                index = favorites.findIndex(fav => 
+                    fav.title === "历史上的今天" && fav.author === "Mango短视频官方");
             } else {
-                // 从收藏中移除
-                favorites.splice(index, 1);
-                favoriteBtn.innerHTML = '<i class="fas fa-heart"></i> 收藏';
-                favoriteBtn.style.backgroundColor = '#ff6600';
+                index = favorites.findIndex(fav => 
+                    fav.title === currentVideo.title && fav.author === currentVideo.author);
             }
             
-            // 保存到本地存储
-            localStorage.setItem('mangoFavorites', JSON.stringify(favorites));
+            if (index === -1) {
+                if (isHistoryToday) {
+                    favorites.push({
+                        title: "历史上的今天",
+                        author: "Mango短视频官方",
+                        play_count: "0",
+                        publish_time: getHoursAgoText(),
+                        isHistoryToday: true,
+                        history_data: currentVideo.history_data || todayHistoryData
+                    });
+                } else {
+                    favorites.push({
+                        ...currentVideo,
+                        keyword: currentSearchKeyword,
+                        index: currentVideoIndex
+                    });
+                }
+                
+                floatingFavoriteBtn.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    floatingFavoriteBtn.style.transform = 'scale(1)';
+                }, 200);
+            } else {
+                favorites.splice(index, 1);
+            }
             
-            // 更新收藏夹显示（如果打开的话）
+            localStorage.setItem('mangoFavorites', JSON.stringify(favorites));
+            updateFavoriteButton(currentVideo);
+            
             if (favoritesModal.style.display === 'flex') {
                 renderFavorites();
             }
         }
         
-        // 渲染收藏夹
         function renderFavorites() {
             favoritesList.innerHTML = '';
             
             if (favorites.length === 0) {
                 emptyFavorites.style.display = 'block';
+                noSearchResults.style.display = 'none';
                 return;
             }
             
             emptyFavorites.style.display = 'none';
             
+            const searchTerm = favoritesSearchInput.value.trim().toLowerCase();
+            let hasResults = false;
+            
             favorites.forEach((fav, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <div class="favorite-item">
-                        <div class="favorite-title" title="${fav.title}">${fav.title}</div>
-                        <button class="remove-favorite" data-index="${index}" title="移除收藏">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                    <div style="font-size:12px;color:#aaa;margin-top:5px;">
-                        作者: ${fav.author} | 发布时间: ${fav.publish_time}
-                    </div>
-                `;
+                if (searchTerm) {
+                    const title = (fav.isHistoryToday ? "历史上的今天" : fav.title).toLowerCase();
+                    const author = (fav.isHistoryToday ? "Mango短视频官方" : fav.author).toLowerCase();
+                    
+                    if (!title.includes(searchTerm) && !author.includes(searchTerm)) {
+                        return;
+                    }
+                }
                 
-                // 点击播放收藏的视频
+                hasResults = true;
+                
+                const li = document.createElement('li');
+                
+                if (fav.isHistoryToday) {
+                    li.innerHTML = `
+                        <div class="favorite-item">
+                            <div class="favorite-title" title="历史上的今天">历史上的今天</div>
+                            <button class="remove-favorite" data-index="${index}" title="移除收藏">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div style="font-size:12px;color:#aaa;margin-top:5px;">
+                            作者: Mango短视频官方 | 发布时间: ${fav.publish_time || getHoursAgoText()}
+                        </div>
+                    `;
+                } else {
+                    li.innerHTML = `
+                        <div class="favorite-item">
+                            <div class="favorite-title" title="${fav.title}">${fav.title}</div>
+                            <button class="remove-favorite" data-index="${index}" title="移除收藏">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div style="font-size:12px;color:#aaa;margin-top:5px;">
+                            作者: ${fav.author} | 发布时间: ${fav.publish_time}
+                        </div>
+                    `;
+                }
+                
                 li.addEventListener('click', (e) => {
                     if (!e.target.classList.contains('remove-favorite') && 
                         !e.target.parentElement.classList.contains('remove-favorite')) {
@@ -1254,7 +854,6 @@
                     }
                 });
                 
-                // 移除收藏按钮
                 const removeBtn = li.querySelector('.remove-favorite');
                 removeBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -1263,18 +862,45 @@
                 
                 favoritesList.appendChild(li);
             });
+            
+            if (!hasResults && searchTerm) {
+                noSearchResults.style.display = 'block';
+            } else {
+                noSearchResults.style.display = 'none';
+            }
         }
         
-        // 播放收藏的视频
+        function filterFavorites(searchTerm) {
+            renderFavorites();
+        }
+        
         async function playFavorite(fav, favIndex) {
-            // 设置搜索关键词
+            if (fav.isHistoryToday) {
+                const historyTodayVideo = {
+                    isHistoryToday: true,
+                    title: "历史上的今天",
+                    author: "Mango短视频官方",
+                    play_count: "0",
+                    publish_time: getHoursAgoText(),
+                    history_data: fav.history_data || todayHistoryData
+                };
+                
+                currentVideoList = [historyTodayVideo];
+                currentVideoIndex = 0;
+                currentSearchKeyword = "历史上的今天";
+                searchInput.value = "历史上的今天";
+                isRecommendationMode = false;
+                
+                loadHistoryTodayVideo(historyTodayVideo);
+                return;
+            }
+            
             searchInput.value = fav.keyword || fav.title.substring(0, 20);
             currentSearchKeyword = fav.keyword || fav.title.substring(0, 20);
             
-            // 退出推荐模式
             isRecommendationMode = false;
+            historyTodayInserted = false;
             
-            // 重新搜索
             showLoader();
             
             try {
@@ -1284,7 +910,6 @@
                 if (data.success && data.data && data.data.length > 0) {
                     currentVideoList = data.data;
                     
-                    // 尝试找到相同的视频
                     const videoIndex = currentVideoList.findIndex(v => 
                         v.title === fav.title && v.author === fav.author);
                     
@@ -1292,32 +917,27 @@
                         currentVideoIndex = videoIndex;
                         await loadVideoByIndex(videoIndex);
                     } else {
-                        // 如果找不到，播放列表中的第一个
                         currentVideoIndex = 0;
                         await loadVideoByIndex(0);
                     }
                 }
             } catch (error) {
-                console.error('播放收藏视频出错:', error);
                 alert('无法加载收藏的视频');
                 hideLoader();
             }
         }
         
-        // 移除收藏
         function removeFavorite(index) {
             favorites.splice(index, 1);
             localStorage.setItem('mangoFavorites', JSON.stringify(favorites));
             renderFavorites();
             
-            // 如果当前视频被移除，更新收藏按钮
             const currentVideo = currentVideoList[currentVideoIndex];
             if (currentVideo) {
                 updateFavoriteButton(currentVideo);
             }
         }
         
-        // 上一个视频
         function prevVideo() {
             if (currentVideoList.length === 0) return;
             
@@ -1327,15 +947,12 @@
             loadVideoByIndex(newIndex);
         }
         
-        // 下一个视频
         function nextVideo() {
             if (currentVideoList.length === 0) return;
             
-            // 如果在推荐模式下，增加计数
             if (isRecommendationMode) {
                 recommendationCount++;
                 
-                // 每播放5个视频，切换到下一个推荐词
                 if (recommendationCount >= 5) {
                     loadNextRecommendation();
                     return;
@@ -1348,44 +965,306 @@
             loadVideoByIndex(newIndex);
         }
         
-        // 显示加载指示器
         function showLoader() {
             loader.style.display = 'block';
         }
         
-        // 隐藏加载指示器
         function hideLoader() {
             loader.style.display = 'none';
         }
         
-        // 分享功能
-        document.getElementById('shareBtn').addEventListener('click', function() {
+        function openShareModal() {
             const currentVideo = currentVideoList[currentVideoIndex];
             if (!currentVideo) return;
             
-            const shareText = `我正在Mango短视频观看: ${currentVideo.title} - 作者: ${currentVideo.author}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Mango短视频',
-                    text: shareText,
-                    url: window.location.href
-                });
-            } else {
-                // 复制到剪贴板作为后备方案
-                navigator.clipboard.writeText(shareText).then(() => {
-                    alert('分享内容已复制到剪贴板');
-                }).catch(() => {
-                    // 如果复制失败，显示分享文本
-                    alert(shareText + '\n\n(请手动复制分享)');
-                });
-            }
-        });
+            renderShareContent(currentVideo);
+            showModal(shareModal);
+        }
         
-        // 监听屏幕方向变化
+        function renderShareContent(video) {
+            const isHistoryToday = video.isHistoryToday;
+            const videoUrl = window.location.href;
+            
+            let shareText = '';
+            let shareTitle = '';
+            
+            if (isHistoryToday) {
+                const now = new Date();
+                const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                const day = now.getDate().toString().padStart(2, '0');
+                shareText = `我正在Mango短视频查看历史上的今天(${month}月${day}日)，快来一起看看吧！`;
+                shareTitle = '历史上的今天 - Mango短视频';
+            } else {
+                shareText = `我正在Mango短视频观看《${video.title}》 - 作者: ${video.author}，推荐给你！`;
+                shareTitle = `${video.title} - Mango短视频`;
+            }
+            
+            let contentHTML = `
+                <div class="share-video-info">
+                    <div class="share-video-title">${isHistoryToday ? '历史上的今天' : video.title}</div>
+                    <div class="share-video-meta">
+                        <div>作者: ${isHistoryToday ? 'Mango短视频官方' : video.author}</div>
+                        <div>${isHistoryToday ? '每日更新' : `播放量: ${video.play_count || '0'}`}</div>
+                    </div>
+                </div>
+                
+                <div class="share-options">
+                    <div class="share-option" id="copyUrlBtn" title="复制链接">
+                        <div class="share-option-icon" style="background:linear-gradient(135deg,#4CAF50,#2E7D32);">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="share-option-text">复制链接</div>
+                    </div>
+                    
+                    <div class="share-option" id="copyTextBtn" title="复制分享文本">
+                        <div class="share-option-icon" style="background:linear-gradient(135deg,#4CAF50,#2E7D32);">
+                            <i class="fas fa-copy"></i>
+                        </div>
+                        <div class="share-option-text">复制文案</div>
+                    </div>
+                    
+                    <div class="share-option" id="systemShareBtn" title="系统分享">
+                        <div class="share-option-icon" style="background:linear-gradient(135deg,#FF9800,#F57C00);">
+                            <i class="fas fa-share-alt"></i>
+                        </div>
+                        <div class="share-option-text">系统分享</div>
+                    </div>
+                    
+                    <div class="share-option" id="wechatShareBtn" title="分享到微信">
+                        <div class="share-option-icon" style="background:linear-gradient(135deg,#09BB07,#09A306);">
+                            <i class="fab fa-weixin"></i>
+                        </div>
+                        <div class="share-option-text">微信分享</div>
+                    </div>
+                    
+                    <div class="share-option" id="qqShareBtn" title="分享到QQ">
+                        <div class="share-option-icon" style="background:linear-gradient(135deg,#12B7F5,#0099CC);">
+                            <i class="fab fa-qq"></i>
+                        </div>
+                        <div class="share-option-text">QQ分享</div>
+                    </div>
+                    
+                    <div class="share-option" id="weiboShareBtn" title="分享到微博">
+                        <div class="share-option-icon" style="background:linear-gradient(135deg,#E6162D,#D50F26);">
+                            <i class="fab fa-weibo"></i>
+                        </div>
+                        <div class="share-option-text">微博分享</div>
+                    </div>
+                </div>
+                
+                <div class="share-url-container">
+                    <div class="share-url-label">分享链接:</div>
+                    <div class="share-url-box">
+                        <input type="text" class="share-url-input" id="shareUrlInput" value="${videoUrl}" readonly>
+                        <button class="share-url-copy-btn" id="shareUrlCopyBtn">复制</button>
+                    </div>
+                </div>
+                
+                <div class="share-message">
+                    分享给好友，一起观看精彩视频！
+                </div>
+            `;
+            
+            shareContent.innerHTML = contentHTML;
+            
+            const copyUrlBtn = document.getElementById('copyUrlBtn');
+            const shareUrlInput = document.getElementById('shareUrlInput');
+            const shareUrlCopyBtn = document.getElementById('shareUrlCopyBtn');
+            const copyTextBtn = document.getElementById('copyTextBtn');
+            const systemShareBtn = document.getElementById('systemShareBtn');
+            const wechatShareBtn = document.getElementById('wechatShareBtn');
+            const qqShareBtn = document.getElementById('qqShareBtn');
+            const weiboShareBtn = document.getElementById('weiboShareBtn');
+            
+            copyUrlBtn.addEventListener('click', function() {
+                copyToClipboard(videoUrl, '链接');
+            });
+            
+            shareUrlCopyBtn.addEventListener('click', function() {
+                copyToClipboard(videoUrl, '链接');
+                shareUrlCopyBtn.textContent = '已复制';
+                setTimeout(() => {
+                    shareUrlCopyBtn.textContent = '复制';
+                }, 2000);
+            });
+            
+            copyTextBtn.addEventListener('click', function() {
+                copyToClipboard(shareText, '分享文案');
+            });
+            
+            systemShareBtn.addEventListener('click', function() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: shareTitle,
+                        text: shareText,
+                        url: videoUrl
+                    }).catch(err => {
+                        console.log('分享取消或出错:', err);
+                    });
+                } else {
+                    alert('您的浏览器不支持系统分享功能，已为您复制分享文案到剪贴板');
+                    copyToClipboard(shareText, '分享文案');
+                }
+            });
+            
+            wechatShareBtn.addEventListener('click', function() {
+                alert('微信分享功能需要接入微信SDK，这里已为您复制分享文案到剪贴板');
+                copyToClipboard(shareText, '分享文案');
+            });
+            
+            qqShareBtn.addEventListener('click', function() {
+                alert('QQ分享功能需要接入QQ SDK，这里已为您复制分享文案到剪贴板');
+                copyToClipboard(shareText, '分享文案');
+            });
+            
+            weiboShareBtn.addEventListener('click', function() {
+                const weiboUrl = `https://service.weibo.com/share/share.php?title=${encodeURIComponent(shareText)}&url=${encodeURIComponent(videoUrl)}`;
+                window.open(weiboUrl, '_blank', 'width=600,height=400');
+            });
+        }
+        
+        function copyToClipboard(text, type = '内容') {
+            navigator.clipboard.writeText(text).then(() => {
+                showCopySuccessMessage(type);
+            }).catch(err => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        showCopySuccessMessage(type);
+                    } else {
+                        alert(`复制${type}失败，请手动复制:\n\n${text}`);
+                    }
+                } catch (err) {
+                    alert(`复制${type}失败，请手动复制:\n\n${text}`);
+                }
+                
+                document.body.removeChild(textarea);
+            });
+        }
+        
+        function showCopySuccessMessage(type) {
+            const message = document.createElement('div');
+            message.textContent = `${type}已复制到剪贴板`;
+            message.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                z-index: 3000;
+                font-size: 16px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                animation: fadeInOut 2s ease-in-out;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; }
+                    15% { opacity: 1; }
+                    85% { opacity: 1; }
+                    100% { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                document.body.removeChild(message);
+                document.head.removeChild(style);
+            }, 2000);
+        }
+        
         window.addEventListener('orientationchange', function() {
             setTimeout(adjustLayout, 300);
         });
+        
+        function addToSearchHistory(keyword) {
+            searchHistory = searchHistory.filter(item => item.keyword !== keyword);
+            
+            searchHistory.unshift({
+                keyword: keyword,
+                time: new Date().toLocaleString('zh-CN', { 
+                    month: '2-digit', 
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            });
+            
+            if (searchHistory.length > MAX_SEARCH_HISTORY) {
+                searchHistory = searchHistory.slice(0, MAX_SEARCH_HISTORY);
+            }
+            
+            localStorage.setItem('mangoSearchHistory', JSON.stringify(searchHistory));
+            updateSearchHistoryDisplay();
+        }
+        
+        function updateSearchHistoryDisplay() {
+            const dropdown = document.getElementById('searchHistoryDropdown');
+            
+            if (searchHistory.length === 0) {
+                dropdown.innerHTML = '<div class="search-history-item">暂无搜索历史</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            searchHistory.forEach((item, index) => {
+                html += `
+                    <div class="search-history-item" data-keyword="${item.keyword}">
+                        <div class="search-history-text">${item.keyword}</div>
+                        <div class="search-history-time">${item.time}</div>
+                    </div>
+                `;
+            });
+            
+            html += `<div class="clear-search-history" id="clearSearchHistory">清除搜索历史</div>`;
+            
+            dropdown.innerHTML = html;
+            
+            const historyItems = dropdown.querySelectorAll('.search-history-item');
+            historyItems.forEach(item => {
+                const keyword = item.getAttribute('data-keyword');
+                if (keyword) {
+                    item.addEventListener('click', function() {
+                        searchInput.value = keyword;
+                        currentSearchKeyword = keyword;
+                        
+                        isRecommendationMode = false;
+                        recommendationCount = 0;
+                        historyTodayInserted = false;
+                        
+                        searchHistoryDropdown.style.display = 'none';
+                        searchVideos();
+                    });
+                }
+            });
+            
+            const clearBtn = document.getElementById('clearSearchHistory');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    clearSearchHistory();
+                });
+            }
+        }
+        
+        function clearSearchHistory() {
+            if (confirm('确定要清除所有搜索历史吗？')) {
+                searchHistory = [];
+                localStorage.setItem('mangoSearchHistory', JSON.stringify(searchHistory));
+                updateSearchHistoryDisplay();
+            }
+        }
     </script>
 </body>
 </html>
